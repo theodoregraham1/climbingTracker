@@ -1,0 +1,35 @@
+{% extends "tracker/layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-4 mx-auto">
+
+        <h1 class="text-center">Register</h1>
+
+        <form action="{% url 'register' %}" method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <input autofocus class="form-control" type="text" name="username" id="username-input" placeholder="Username" value="{{ username }}">
+            </div>
+            <div class="form-group">
+                <input autofocus class="form-control" type="email" name="email" id="email-input" placeholder="Email" value="{{ email }}">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="password" name="password" id="password-input" placeholder="Password">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="password" name="confirmation" id="confirmation-input" placeholder="Confirm Password">
+            </div>
+            <div class="text-center mt-3">
+                <input class="btn btn-primary" type="submit" value="Register">
+            </div>
+        </form>
+
+        <p class="text-center">Already registered? <a href="{% url 'login' %}">Login here</a></p>
+        <p class="text-center">Run a climbing centre? <a href="{% url 'add_centre' %}">Register as a centre</a></p>
+    </div>
+{% endblock %}
