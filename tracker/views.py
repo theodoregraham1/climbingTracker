@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
@@ -122,8 +123,3 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully")
     return HttpResponseRedirect(reverse("index"))
-
-
-
-
-

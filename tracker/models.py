@@ -3,13 +3,14 @@ from django.db import models
 
 
 # Users
-class Centre(AbstractUser):
-    groups = models.ManyToManyField(Group, related_name='centres_groups')
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='centres_user_permissions'
-    )
+class User(AbstractUser):
 
+    class Meta:
+        app_label = "tracker"
+
+
+class Centre(models.Model):
+    user = models.ForeignKey("User", related_name="Centre", on_delete=models.CASCADE)
     location = models.TextField(max_length=500)
     setters = models.ManyToManyField("Climber", related_name="employers")
 
@@ -17,13 +18,8 @@ class Centre(AbstractUser):
         app_label = "tracker"
 
 
-class Climber(AbstractUser):
-    groups = models.ManyToManyField(Group, related_name='climber_groups')
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='climber_user_permissions'
-    )
-
+class Climber(models.Model):
+    user = models.ForeignKey("User", related_name="Climber", on_delete=models.CASCADE)
     following = models.ManyToManyField("Centre", related_name="followers")
 
     class Meta:
@@ -53,3 +49,5 @@ class Review(models.Model):
 
     class Meta:
         app_label = "tracker"
+
+
