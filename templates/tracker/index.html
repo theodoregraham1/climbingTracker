@@ -8,4 +8,10 @@
     <h1 class="text-center">All Centres</h1>
 
     <!-- TODO: Add paginated centres here -->
+    <ul class="pagination">
+        <li class="page-item ml-auto"><button id="page-previous-btn" class="page-link" onclick="{page_num-=1; load_page()}">Previous</button></li>
+        <li class="page-item mr-auto"><button id="page-next-btn" class="page-link" onclick="{page_num+=1; load_page()}">Next</button></li>
+    </ul>
+
+    <ul class="list-group" id="centres-display"></ul>
 {% endblock %}

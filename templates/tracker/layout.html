@@ -6,6 +6,8 @@
     <meta charset="UTF-8">
     <title>{% block title %}Climbing Tracker{% endblock %}</title>
 
+    <script src="{% static 'scripts.js' %}"></script>
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 
@@ -13,6 +15,8 @@
 </head>
 
 <body>
+    {% csrf_token %}
+
     <nav class="navbar navbar-expand-lg navbar-light">
         <a class="navbar-brand" href="">The Tracker</a>
 
@@ -27,9 +31,11 @@
                     <a class="nav-link" href="{% url 'index' %}">All Centres</a>
                 </li>
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Your Centres</a>
-                    </li>
+                        <li class="nav-item">
+                            {% if type == "Climber" %}
+                                <a class="nav-link" href="#">Your Centres</a>
+                            {% endif %}
+                        </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                     </li>

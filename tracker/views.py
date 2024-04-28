@@ -1,7 +1,8 @@
-from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
+from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -9,9 +10,18 @@ from tracker.models import Climber, Centre
 
 
 def index(request):
-    # Display all centres
-
+    # Display all centres, paginated
     return render(request, "tracker/index.html")
+
+
+def get_centres(request):
+    paginator = Paginator(Centre.objects.all().order_by("name"), request.POST["page_size"])
+    page_num = request.POST["page_num"]
+
+    centres = [centre.serialise() for i, centre in enumerate(paginator.get_page(page_num))]
+    print(type(centres[0]))
+
+    return JsonResponse(centres, status=201, safe=False)
 
 
 def login_view(request):
@@ -28,6 +38,12 @@ def login_view(request):
 
     if user is not None:
         login(request, user)
+        if user.owned_centre is not None:
+            request.session["type"] = "Centre"
+        else:
+            request.session["type"] = "Climber"
+
+        messages.success(request, "Logged in successfully")
         return HttpResponseRedirect(reverse("index"))
 
     messages.error(request, "Invalid username and/or password")
@@ -48,8 +64,8 @@ def register(request):
     password = request.POST["password"]
     confirmation = request.POST["confirmation"]
 
-    if Climber.objects.get(username=username) is not None or Centre.objects.get(username=username) is not None:
-        messages.error(request, "Username is already used")
+    if User.objects.filter(username=username).exists():
+        messages.error(request, "Username is already taken")
         return render(request, "tracker/register.html", {
             "username": username,
             "email": email
@@ -62,15 +78,25 @@ def register(request):
             "email": email
         })
 
-    new_user = Climber.objects.create_user(username, email, password)
+    new_user = User.objects.create_user(username=username, email=email, password=password)
 
     if new_user is not None:
         new_user.save()
-        login(request, new_user)
 
-        messages.success(request, "Logged in successfully")
+        try:
+            new_climber = Climber(user=new_user)
+            new_climber.save()
+        except Exception:
+            new_user.delete()
+            new_user.save()
+
+        login(request, new_user)
+        request.session["type"] = "Climber"
+
+        messages.success(request, "Registered successfully")
         return HttpResponseRedirect(reverse("index"))
 
+    messages.error(request, "An unknown error occurred, login unsuccessful")
     return render(request, "tracker/register.html", {
         "username": username,
         "email": email
@@ -87,10 +113,10 @@ def add_centre(request):
     confirmation = request.POST["confirmation"]
     location = request.POST["location"]
 
-    if Climber.objects.get(username=username) is not None or Centre.objects.get(username=username) is not None:
+    if User.objects.filter(username=username).exists():
         messages.error(request, "Username is already used")
         return render(request, "tracker/add_centre.html", {
-            "username": username,
+            "username": "",
             "email": email,
             "location": location
         })
@@ -103,15 +129,30 @@ def add_centre(request):
             "location": location
         })
 
-    new_centre = Centre(username=username, email=email, password=password, location=location)
+    new_user = User.objects.create_user(username=username, email=email, password=password)
 
-    if new_centre is not None:
-        new_centre.save()
-        login(request, new_centre)
+    if new_user is not None:
+        new_user.save()
+
+        try:
+            new_centre = Centre(owner=new_user)
+            new_centre.save()
+        except Exception:
+            new_user.delete()
+            messages.error(request, "An unknown error occurred, login unsuccessful")
+
+            return render(request, "tracker/add_centre.html", {
+                "username": username,
+                "email": email
+            })
+
+        login(request, new_user)
+        request.session["type"] = "Centre"
 
         messages.success(request, "Centre registered successfully")
         return HttpResponseRedirect(reverse("index"))
 
+    messages.error(request, "An unknown error occurred, login unsuccessful")
     return render(request, "tracker/add_centre.html", {
         "username": username,
         "email": email,
@@ -123,3 +164,8 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully")
     return HttpResponseRedirect(reverse("index"))
+
+
+def account_centre(request):
+    if request.method != "post":
+        return render()
