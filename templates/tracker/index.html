@@ -1,7 +1,12 @@
 {% extends "tracker/layout.html" %}
+{% load static %}
 
 {% block title %}
     All Centres
+{% endblock %}
+
+{% block head %}
+    <script src="{% static 'centres_display.js' %}"></script>
 {% endblock %}
 
 {% block body %}

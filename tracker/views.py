@@ -19,7 +19,6 @@ def get_centres(request):
     page_num = request.POST["page_num"]
 
     centres = [centre.serialise() for i, centre in enumerate(paginator.get_page(page_num))]
-    print(type(centres[0]))
 
     return JsonResponse(centres, status=201, safe=False)
 
@@ -168,4 +167,6 @@ def logout_view(request):
 
 def account_centre(request):
     if request.method != "post":
-        return render()
+        return render(request, "tracker/account_centre.html", {
+
+        })

@@ -1,9 +1,21 @@
 {% extends 'tracker/layout.html' %}
+{% load static %}
 
 {% block title %}
     Account
 {% endblock %}
 
+{% block head %}
+    <script src={% static "account_editing.js" %}></script>
+{% endblock %}
+
 {% block body %}
-	<
+	<ul class="list-group">
+        <li id="change-username-li" class="list-group-item col-md-9 mx-auto">
+            <h4>Current Username:</h4>
+            <input disabled id="old-username" class="form-control" type="text" value="{{ user.username }}">
+
+            <button id="change-username-btn" class="btn btn-primary mt-3" onclick="open_username_editing()">Change Username</button>
+        </li>
+    </ul>
 {% endblock %}
