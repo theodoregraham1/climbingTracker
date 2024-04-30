@@ -23,6 +23,7 @@ function load_page() {
 	})
 		.then(response => response.json())
 		.then(centres => {
+			clear("centres-display")
 			if (centres.length < PAGE_SIZE) {
 				disable("page-next-btn")
 			} else {
