@@ -23,7 +23,7 @@
                 {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" {% if request.session.type == "Centre" %} href="{% url 'account_centre' %}" {% else %} href="#" {% endif %}>
-                            <strong>{{ user.username }}</strong>
+                            <strong id="username-link">{{ user.username }}</strong>
                         </a>
                     </li>
                 {% endif %}

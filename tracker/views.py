@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, QueryDict
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -170,3 +170,21 @@ def account_centre(request):
         return render(request, "tracker/account_centre.html", {
 
         })
+
+
+def edit_username(request):
+    password = request.POST["password"]
+    username = request.POST["new-username"]
+
+    if not request.user.check_password(password):
+        messages.error(request, "Password incorrect")
+
+    elif User.objects.filter(username=username).exists():
+        messages.error(request, "Username already taken")
+
+    else:
+        request.user.username = username
+        request.user.save()
+        return JsonResponse({"username": request.user.username}, status=201)
+
+    return JsonResponse({"username": request.user.username}, status=403)

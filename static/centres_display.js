@@ -17,7 +17,7 @@ function load_page() {
 	data.append('page_size', String(PAGE_SIZE));
 	data.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value)
 
-	fetch("centres", {
+	fetch("api/centres", {
 		method: "POST",
 		body: data
 	})
