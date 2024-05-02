@@ -8,6 +8,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <script src="{% static 'scripts.js' %}"></script>
 
     {% block head %}{% endblock %}
 </head>
@@ -52,7 +53,7 @@
     </nav>
 
     <!-- Display messages -->
-    <div class="mx-3 mt-3">
+    <div id="messages-container" class="mx-3 mt-3">
         {% if messages %}
             {% for message in messages %}
                 <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %} role="alert">{{ message }}</div>

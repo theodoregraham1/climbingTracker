@@ -167,24 +167,54 @@ def logout_view(request):
 
 def account_centre(request):
     if request.method != "post":
-        return render(request, "tracker/account_centre.html", {
-
-        })
+        return render(request, "tracker/account_centre.html")
 
 
 def edit_username(request):
     password = request.POST["password"]
     username = request.POST["new-username"]
 
+    status = 202
+
     if not request.user.check_password(password):
-        messages.error(request, "Password incorrect")
+        message = {"message": "Password incorrect", "tag": "error"}
 
     elif User.objects.filter(username=username).exists():
-        messages.error(request, "Username already taken")
+        message = {"message": "Username already taken", "tag": "error"}
 
     else:
         request.user.username = username
         request.user.save()
-        return JsonResponse({"username": request.user.username}, status=201)
 
-    return JsonResponse({"username": request.user.username}, status=403)
+        message = {"message": "Username updated", "tag": "success"}
+        status = 201
+
+    return JsonResponse({"username": request.user.username, "message": message}, status=status)
+
+
+def edit_password(request):
+    old_password = request.POST["old-password"]
+    new_password = request.POST["new-password"]
+    confirmation = request.POST["confirmation"]
+
+    status = 202
+    success = False
+
+    if new_password != confirmation:
+        message = {"message": "Passwords do not match", "tag": "error"}
+
+    elif request.user.check_password(old_password):
+        message = {"message": "Password is not correct", "tag": "error"}
+
+    else:
+        user = request.user
+        request.user.set_password(new_password)
+        request.user.save()
+
+        login(request, user)
+
+        message = {"message": "Password updated", "tag": "success"}
+        status = 201
+        success = True
+
+    return JsonResponse({"success": success, "message": message}, status=status)

@@ -12,5 +12,6 @@ urlpatterns = [
     path("centre/account", views.account_centre, name="account_centre"),
 
     path("api/centres", views.get_centres, name="centres"),
-    path("api/edit/username", views.edit_username, name="edit_username")
+    path("api/edit/username", views.edit_username, name="edit_username"),
+    path("api/edit/password", views.edit_password, name="edit_password")
 ]
