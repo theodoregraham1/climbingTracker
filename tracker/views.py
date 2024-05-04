@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, JsonResponse, QueryDict
@@ -159,22 +160,29 @@ def add_centre(request):
     })
 
 
+@login_required
 def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully")
     return HttpResponseRedirect(reverse("index"))
 
 
+@login_required
 def account_centre(request):
     if request.method != "post":
-        return render(request, "tracker/account_centre.html")
+        print()
+        return render(request, "tracker/account_centre.html", {
+            "centre": Centre.objects.get(owner=request.user).serialise()
+        })
 
 
+@login_required
 def edit_username(request):
     password = request.POST["password"]
     username = request.POST["new-username"]
 
     status = 202
+    success = False
 
     if not request.user.check_password(password):
         message = {"message": "Password incorrect", "tag": "error"}
@@ -188,10 +196,12 @@ def edit_username(request):
 
         message = {"message": "Username updated", "tag": "success"}
         status = 201
+        success = True
 
-    return JsonResponse({"username": request.user.username, "message": message}, status=status)
+    return JsonResponse({"username": request.user.username, "success": success, "message": message}, status=status)
 
 
+@login_required
 def edit_password(request):
     old_password = request.POST["old-password"]
     new_password = request.POST["new-password"]
@@ -216,5 +226,50 @@ def edit_password(request):
         message = {"message": "Password updated", "tag": "success"}
         status = 201
         success = True
+
+    return JsonResponse({"success": success, "message": message}, status=status)
+
+
+@login_required
+def edit_centre_attribute(request, attribute):
+    centre = Centre.objects.get(owner=request.user)
+
+    if centre is None:
+        return JsonResponse({"success": False}, status=500)
+
+    new_attr = request.POST[f"new-{attribute}"]
+
+    setattr(centre, attribute, new_attr)
+    centre.save()
+
+    return JsonResponse({
+        attribute: new_attr,
+        "success": True,
+        "message": {"message": f"{attribute.capitalize()} edited successfully", "tag": "success"}
+    }, status=201)
+
+@login_required
+def edit_centre_image(request):
+    centre = Centre.objects.get(owner=request.user)
+
+    if centre is None:
+        return JsonResponse({"success": False}, status=500)
+
+    new_image = request.FILES["new-image"]
+
+    status = 202
+    success = False
+
+    if new_image.content_type[:5] != "image":
+        message = {"message": "Image must be an image file", "tag": "error"}
+
+    else:
+        centre.image = new_image
+        centre.save()
+        print(centre.image)
+
+        status = 201
+        success = True
+        message = {"message": "Image changed succesfully", "tag": "success"}
 
     return JsonResponse({"success": success, "message": message}, status=status)

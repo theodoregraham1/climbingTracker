@@ -13,5 +13,7 @@ urlpatterns = [
 
     path("api/centres", views.get_centres, name="centres"),
     path("api/edit/username", views.edit_username, name="edit_username"),
-    path("api/edit/password", views.edit_password, name="edit_password")
+    path("api/edit/password", views.edit_password, name="edit_password"),
+    path("api/edit/image", views.edit_centre_image, name="edit_image"),
+    path("api/edit/<attribute>", views.edit_centre_attribute, name="edit_centre_attribute")
 ]

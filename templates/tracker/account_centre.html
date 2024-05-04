@@ -20,7 +20,32 @@
 
         <li id="change-password-li" class="list-group-item list-group-item-action">
             <h4>Password Settings</h4>
-            <button id="change-password-btn" class="btn btn-primary mt-3" onclick="open_password_editing()">Change Password</button>
+            <button id="change-password-btn" class="btn btn-primary" onclick="open_password_editing()">Change Password</button>
+        </li>
+
+        <li id="change-name-li" class="list-group-item list-group-item-action">
+            <h4>Current Centre Name:</h4>
+            <input disabled id="old-name" class="form-control" type="text" value="{{ centre.name }}">
+
+            <button id="change-name-btn" class="btn btn-primary mt-3" onclick="open_attr_editing('name')">Change Name</button>
+        </li>
+
+        <li id="change-location-li" class="list-group-item list-group-item-action">
+            <h4>Current Location:</h4>
+            <input disabled id="old-location" class="form-control" type="text" value="{{ centre.location }}">
+
+            <button id="change-location-btn" class="btn btn-primary mt-3" onclick="open_attr_editing('location')">Change Location</button>
+        </li>
+
+        <li id="change-image-li" class="list-group-item list-group-item-action">
+            <h4>Current Image:</h4>
+            {% if centre.image_url != None %}
+                <img id="old-image" class="form-control" type="text" alt="An image of your centre" src="{{ centre.image_url }}">
+            {% else %}
+                <input disabled id="old-image" class="form-control" type="text" value="No image chosen">
+            {% endif %}
+
+            <button id="change-image-btn" class="btn btn-primary mt-3" onclick="open_image_editing()">Change Image</button>
         </li>
     </ul>
 {% endblock %}

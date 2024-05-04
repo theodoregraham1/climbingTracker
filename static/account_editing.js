@@ -6,7 +6,7 @@ function open_username_editing() {
 			<input id="password" name="password" class="form-control mt-3" type="password" placeholder="Password">
 			<button class="btn btn-primary mt-3" type="submit" onclick="{edit_username(); return false;}">Change Username</button>
 		</form>
-	`
+	` // FIXME This resets the value of the disabled old-username element for no reason
 	document.getElementById("edit-username-form")
 		.addEventListener("submit", (event) => event.preventDefault())
 }
@@ -23,7 +23,9 @@ function edit_username() {
 		.then(json => {
 			document.getElementById("old-username").value = json["username"];
 			document.getElementById("username-link").innerText = json["username"]
-			close_editing_form("username");
+			if (json["success"]) {
+				close_editing_form("username");
+			}
 
 			if (json["message"] != null) {
 				display_message(json["message"]["message"], json["message"]["tag"])
@@ -47,6 +49,7 @@ function open_password_editing() {
 		.addEventListener("submit", (event) => event.preventDefault())
 }
 
+
 function edit_password() {
 	const data = new FormData(document.forms.namedItem("edit-password-form"));
 	data.append("csrfmiddlewaretoken", get_CSRF_token())
@@ -59,13 +62,75 @@ function edit_password() {
 		.then(json => {
 			if (json["success"]) {
 				close_editing_form("password");
-			} else {
-				display_message(json["message"]["message"], json["message"]["tag"])
 			}
+			display_message(json["message"]["message"], json["message"]["tag"])
 		})
 	return false;
 }
 
+
+function open_image_editing() {
+	document.getElementById("change-image-btn").style.display = "none";
+	document.getElementById("change-image-li").innerHTML += `
+		<form id="edit-image-form" name="edit-image-form">
+			<input id="new-image" class="form-control mt-3" type="file">
+			<button class="btn btn-primary mt-3" type="submit" onclick="{edit_image(); return false;}">Change Image</button>
+		</form>
+	`
+	document.getElementById("edit-image-form")
+		.addEventListener("submit", (event) => event.preventDefault())
+}
+
+function edit_image() {
+	const data = new FormData()
+	data.append("csrfmiddlewaretoken", get_CSRF_token())
+	data.append("new-image", document.getElementById("new-image").files[0])
+
+	data.forEach((item) => console.log(item))
+
+	fetch(`../api/edit/image`, {
+		method: "POST",
+		body: data
+	})
+		.then(response => response.json())
+		.then(json => {
+			if (json["success"]) {
+				close_editing_form("image");
+			}
+			document.getElementById(`old-image`).value = json[name];
+			display_message(json["message"]["message"], json["message"]["tag"])
+		})
+}
+
+function open_attr_editing(name) {
+	document.getElementById(`change-${name}-btn`).style.display = "none";
+	document.getElementById(`change-${name}-li`).innerHTML += `
+		<form id="edit-${name}-form" name="edit-${name}-form">
+			<input id="new-${name}" name="new-${name}" class="form-control mt-3" type="text" placeholder="New ${toCapitalised(name)}">
+			<button class="btn btn-primary mt-3" type="submit" onclick="{edit_attribute('${name}'); return false;}">Change ${toCapitalised(name)}</button>
+		</form>
+	`
+	document.getElementById(`edit-${name}-form`)
+		.addEventListener("submit", (event) => event.preventDefault())
+}
+
+function edit_attribute(name) {
+	const data = new FormData(document.forms.namedItem(`edit-${name}-form`));
+	data.append("csrfmiddlewaretoken", get_CSRF_token())
+	fetch(`../api/edit/${name}`, {
+		method: "POST",
+		body: data
+	})
+		.then(response => response.json())
+		.then(json => {
+			if (json["success"]) {
+				close_editing_form(name);
+			}
+			document.getElementById(`old-${name}`).value = json[name];
+			display_message(json["message"]["message"], json["message"]["tag"])
+		})
+	return false;
+}
 
 function close_editing_form(name) {
 	document.getElementById(`change-${name}-btn`).style.display = "block";

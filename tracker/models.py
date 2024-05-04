@@ -9,7 +9,7 @@ class Centre(models.Model):
     name = models.TextField(max_length=100)
     location = models.TextField(max_length=500)
     setters = models.ManyToManyField("Climber", related_name="employers", blank=True)
-    image = models.ImageField(upload_to="centres", blank=True)
+    image = models.ImageField(upload_to="media/centres", blank=True)
 
     def serialise(self):
         data = {
