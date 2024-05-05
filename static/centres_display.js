@@ -38,14 +38,22 @@ function add_centre(centre) {
 	const li = document.createElement("li")
 
 	li.id = `centre-${centre.id}`
-	li.className = "list-group-item mx-auto col-md-6 mt-3"
+	li.className = "list-group-item mx-auto col-md-6 mt-3 text-center"
 	li.innerHTML = ` 
 			<h3><a href="#">${centre.name}</a></h3>
-			<img src="${centre.image_url}" alt="Image provided by climbing centre ${centre.name}">
-			<p>${centre.location}</p>
+			<img src="${centre.image_url}" height="300" alt="Image provided by climbing centre ${centre.name}" class="mb-3"">
+			<div>
+				<strong>Location:</strong> ${centre.location}
+			</div>
+			<div>
+				<strong>Walls:</strong> ${centre.walls_num}
+			</div>
+			<div>
+				<strong>Routes:</strong> ${centre.routes_num}
+			</div>
 	`
 	// TODO: Hyperlink for centre
-	// TODO: Provide messages of recent activity from each
+	// TODO: Provide messages of recent activity from each centre
 
 	document.getElementById("centres-display").append(li)
 }

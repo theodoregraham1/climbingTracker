@@ -17,13 +17,13 @@
     {% csrf_token %}
 
     <nav class="navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="">The Tracker</a>
+        <a class="navbar-brand px-3" href="">The Tracker</a>
 
         <div>
             <ul class="navbar-nav mr-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" {% if request.session.type == "Centre" %} href="{% url 'account_centre' %}" {% else %} href="#" {% endif %}>
+                        <a class="nav-link" {% if request.session.type == "Centre" %} href="{% url 'account_centre' %}" {% else %} href="{% url 'account_climber' %}" {% endif %}>
                             <strong id="username-link">{{ user.username }}</strong>
                         </a>
                     </li>

@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect, JsonResponse, QueryDict
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -135,7 +135,7 @@ def add_centre(request):
         new_user.save()
 
         try:
-            new_centre = Centre(owner=new_user)
+            new_centre = Centre(owner=new_user, location=location, name=username)
             new_centre.save()
         except Exception:
             new_user.delete()
@@ -169,11 +169,14 @@ def logout_view(request):
 
 @login_required
 def account_centre(request):
-    if request.method != "post":
-        print()
-        return render(request, "tracker/account_centre.html", {
-            "centre": Centre.objects.get(owner=request.user).serialise()
-        })
+    return render(request, "tracker/account_centre.html", {
+        "centre": Centre.objects.get(owner=request.user).serialise()
+    })
+
+
+@login_required
+def account_climber(request):
+    return render(request, "tracker/account_climber.html")
 
 
 @login_required
@@ -248,6 +251,7 @@ def edit_centre_attribute(request, attribute):
         "message": {"message": f"{attribute.capitalize()} edited successfully", "tag": "success"}
     }, status=201)
 
+
 @login_required
 def edit_centre_image(request):
     centre = Centre.objects.get(owner=request.user)
@@ -270,6 +274,6 @@ def edit_centre_image(request):
 
         status = 201
         success = True
-        message = {"message": "Image changed succesfully", "tag": "success"}
+        message = {"message": "Image changed successfully", "tag": "success"}
 
     return JsonResponse({"success": success, "message": message}, status=status)

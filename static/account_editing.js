@@ -42,7 +42,7 @@ function open_password_editing() {
 			<input id="old-password" name="old-password" class="form-control mt-3" type="password" placeholder="Current Password">
 			<input id="new-password" name="new-password" class="form-control mt-3" type="password" placeholder="New Password">
 			<input id="confirmation" name="confirmation" class="form-control mt-3" type="password" placeholder="Retype New Password">
-			<button class="btn btn-primary mt-3" type="submit" onclick="{edit_password(); return false;}">Change Username</button>
+			<button class="btn btn-primary mt-3" type="submit" onclick="{edit_password(); return false;}">Change Password</button>
 		</form>
 	`
 	document.getElementById("edit-password-form")

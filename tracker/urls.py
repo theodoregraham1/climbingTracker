@@ -10,6 +10,7 @@ urlpatterns = [
 
     path("", views.index, name="index"),
     path("centre/account", views.account_centre, name="account_centre"),
+    path("climber/account", views.account_climber, name="account_climber"),
 
     path("api/centres", views.get_centres, name="centres"),
     path("api/edit/username", views.edit_username, name="edit_username"),

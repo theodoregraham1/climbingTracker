@@ -7,3 +7,12 @@
 .navbar-light {
     background: #18c512;
 }
+
+a {
+    color: black;
+    text-underline: none;
+}
+
+a:hover {
+    color: blue;
+}

@@ -40,12 +40,13 @@
         <li id="change-image-li" class="list-group-item list-group-item-action">
             <h4>Current Image:</h4>
             {% if centre.image_url != None %}
-                <img id="old-image" class="form-control" type="text" alt="An image of your centre" src="{{ centre.image_url }}">
+                <img id="old-image" alt="An image of your centre" src="{{ centre.image_url }}" height="300" width="auto">
             {% else %}
                 <input disabled id="old-image" class="form-control" type="text" value="No image chosen">
             {% endif %}
-
-            <button id="change-image-btn" class="btn btn-primary mt-3" onclick="open_image_editing()">Change Image</button>
+            <div>
+                <button id="change-image-btn" class="btn btn-primary mt-3" onclick="open_image_editing()">Change Image</button>
+            </div>
         </li>
     </ul>
 {% endblock %}

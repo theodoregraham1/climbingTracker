@@ -18,8 +18,15 @@ class Centre(models.Model):
             "name": self.name,
             "location": self.location,
             "setters": [user.id for user in self.setters.all()],
-            "image_url": None
+            "walls_num": self.walls.count(),
+            "routes_num": None,
+            "image_url": None,
         }
+        total = 0
+        for w in self.walls.all():
+            total += w.routes.count()
+        data["routes_num"] = total
+
         if self.image:
             data["image_url"] = self.image.url
 
