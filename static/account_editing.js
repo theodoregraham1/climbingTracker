@@ -159,14 +159,34 @@ function add_setter() {
 				document.getElementById(`add-setter-btn`).style.display = "block";
 				document.getElementById(`add-setter-form`).remove();
 				document.getElementById('add-setter-btn').insertAdjacentHTML("beforebegin", `
-					<li class="list-group-item">
-                        ${json["username"]}
+					<li id="setter-${ json['id'] }-li" class="list-group-item form-group">
+                        <span id="setter-${json['id']}" aria-describedby="setter-${json['id']}-remove-btn">${ json["username"]}</span>
+                        <span class="badge text-bg-secondary interactable" id="setter-${json['id']}-remove-btn" onclick="remove_setter(${json['id']})">Remove Setter</span>
                     </li>
 				`)
 			}
 			display_message(json["message"]["message"], json["message"]["tag"])
 		})
 	return false;
+}
+
+function remove_setter(id) {
+	const data = new FormData()
+	data.append("csrfmiddlewaretoken", get_CSRF_token())
+	data.append("action", "remove")
+	data.append("id", id)
+
+	fetch(`../api/edit/setters`, {
+		method: "POST",
+		body: data
+	})
+		.then(response => response.json())
+		.then(json => {
+			if (json["success"]) {
+				document.getElementById(`setter-${id}-li`).style.display = "None";
+			}
+			display_message(json["message"]["message"], json["message"]["tag"])
+		})
 }
 
 function close_editing_form(name) {

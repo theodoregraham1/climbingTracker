@@ -289,9 +289,9 @@ def edit_setters_list(request):
     status = 202
     success = False
 
-    print(request.POST)
     if request.POST["action"] == "add":
         setter_user = User.objects.get(username=request.POST["new-setter"])
+        setter = None
 
         if setter_user is None:
             message = {"message": "User does not exist", "tag": "error"}
@@ -312,7 +312,26 @@ def edit_setters_list(request):
                 success = True
                 message = {"message": "Setter added", "tag": "success"}
 
-    return JsonResponse({"success": success, "message": message, "username": request.POST["new-setter"]}, status=status)
+        return JsonResponse({
+            "success": success,
+            "message": message,
+            "username": request.POST["new-setter"] if setter is not None else None,
+            "id": setter.id if setter is not None else None
+        }, status=status)
+
+    else:
+        centre.setters.remove(Climber.objects.get(id=request.POST["id"]))
+        centre.save()
+
+        success = len(centre.setters.filter(id=request.POST["id"])) == 0
+        status = 201 if success else 202
+
+        message = {"message": "Setter removed", "tag": "success"}
+
+        return JsonResponse({
+            "success": success,
+            "message": message,
+        }, status=status)
 
 
 def centre_page(request, centre_id):

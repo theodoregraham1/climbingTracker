@@ -55,9 +55,9 @@
             <h4>Current Setters:</h4>
             <ul id="setters-list" class="list-group col-md-6">
                 {% for setter in centre.setters %}
-                    <li class="list-group-item form-group flex-nowrap justify-content-between">
+                    <li id="setter-{{ setter.id }}-li" class="list-group-item form-group">
                         <span id="setter-{{ setter.id }}" aria-describedby="setter-{{ setter.id }}-remove-btn">{{ setter.username }}</span>
-                        <span class="badge text-bg-danger" id="setter-{{ setter.id }}-remove-btn" onclick="open_add_setter_form()">Remove Setter</span>
+                        <span class="badge text-bg-secondary interactable" id="setter-{{ setter.id }}-remove-btn" onclick="remove_setter({{ setter.id }})">Remove Setter</span>
                     </li>
                 {% endfor %}
                 <button id="add-setter-btn" class="list-group-item list-group-item-action" onclick="open_add_setter_form()">+ Add Setter</button>
