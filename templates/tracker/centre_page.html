@@ -1,0 +1,15 @@
+{% extends 'tracker/layout.html' %}
+
+{% block title %}
+    Centre: {{ centre.name }}
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+    <h2 class="text-center py-3">{{ centre.name }}</h2>
+    <div class="text-center">
+        <img src="{{ centre.image.url }}" height="500" alt="Image provided by climbing centre {{centre.name}}">
+    </div>
+{% endblock %}

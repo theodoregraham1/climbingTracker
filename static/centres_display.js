@@ -40,7 +40,7 @@ function add_centre(centre) {
 	li.id = `centre-${centre.id}`
 	li.className = "list-group-item mx-auto col-md-6 mt-3 text-center"
 	li.innerHTML = ` 
-			<h3><a href="#">${centre.name}</a></h3>
+			<h3><a href="/centres/${centre.id}">${centre.name}</a></h3>
 			<img src="${centre.image_url}" height="300" alt="Image provided by climbing centre ${centre.name}" class="mb-3"">
 			<div>
 				<strong>Location:</strong> ${centre.location}

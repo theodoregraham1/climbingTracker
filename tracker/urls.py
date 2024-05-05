@@ -9,6 +9,8 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
 
     path("", views.index, name="index"),
+    path("centres/<centre_id>", views.centre_page, name="centre_page"),
+
     path("centre/account", views.account_centre, name="account_centre"),
     path("climber/account", views.account_climber, name="account_climber"),
 

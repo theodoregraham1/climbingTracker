@@ -277,3 +277,9 @@ def edit_centre_image(request):
         message = {"message": "Image changed successfully", "tag": "success"}
 
     return JsonResponse({"success": success, "message": message}, status=status)
+
+
+def centre_page(request, centre_id):
+    return render(request, "tracker/centre_page.html", {
+        "centre": Centre.objects.get(id=centre_id)
+    })
