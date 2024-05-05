@@ -12,34 +12,34 @@
 {% block body %}
     <h2 class="text-center py-3">Account Settings</h2>
 
-	<ul class="list-group col-md-9 mx-auto">
-        <li id="change-username-li" class="list-group-item list-group-item-action">
+	<ul class="list-group col-md-9 mx-auto mb-5">
+        <li id="change-username-li" class="list-group-item list-group-item-action pb-3">
             <h4>Current Username:</h4>
             <input disabled id="old-username" class="form-control" type="text" value="{{ user.username }}">
 
             <button id="change-username-btn" class="btn btn-primary mt-3" onclick="open_username_editing()">Change Username</button>
         </li>
 
-        <li id="change-password-li" class="list-group-item list-group-item-action">
+        <li id="change-password-li" class="list-group-item list-group-item-action pb-3">
             <h4>Password Settings</h4>
             <button id="change-password-btn" class="btn btn-primary" onclick="open_password_editing()">Change Password</button>
         </li>
 
-        <li id="change-name-li" class="list-group-item list-group-item-action">
+        <li id="change-name-li" class="list-group-item list-group-item-action pb-3">
             <h4>Current Centre Name:</h4>
             <input disabled id="old-name" class="form-control" type="text" value="{{ centre.name }}">
 
             <button id="change-name-btn" class="btn btn-primary mt-3" onclick="open_attr_editing('name')">Change Name</button>
         </li>
 
-        <li id="change-location-li" class="list-group-item list-group-item-action">
+        <li id="change-location-li" class="list-group-item list-group-item-action pb-3">
             <h4>Current Location:</h4>
             <input disabled id="old-location" class="form-control" type="text" value="{{ centre.location }}">
 
             <button id="change-location-btn" class="btn btn-primary mt-3" onclick="open_attr_editing('location')">Change Location</button>
         </li>
 
-        <li id="change-image-li" class="list-group-item list-group-item-action">
+        <li id="change-image-li" class="list-group-item list-group-item-action pb-3">
             <h4>Current Image:</h4>
             {% if centre.image_url != None %}
                 <img id="old-image" alt="An image of your centre" src="{{ centre.image_url }}" height="300" width="auto">
@@ -49,6 +49,19 @@
             <div>
                 <button id="change-image-btn" class="btn btn-primary mt-3" onclick="open_image_editing()">Change Image</button>
             </div>
+        </li>
+
+        <li id="change-setters-li" class="list-group-item list-group-item-action pb-3">
+            <h4>Current Setters:</h4>
+            <ul id="setters-list" class="list-group col-md-6">
+                {% for setter in centre.setters %}
+                    <li class="list-group-item form-group flex-nowrap justify-content-between">
+                        <span id="setter-{{ setter.id }}" aria-describedby="setter-{{ setter.id }}-remove-btn">{{ setter.username }}</span>
+                        <span class="badge text-bg-danger" id="setter-{{ setter.id }}-remove-btn" onclick="open_add_setter_form()">Remove Setter</span>
+                    </li>
+                {% endfor %}
+                <button id="add-setter-btn" class="list-group-item list-group-item-action" onclick="open_add_setter_form()">+ Add Setter</button>
+            </ul>
         </li>
     </ul>
 {% endblock %}

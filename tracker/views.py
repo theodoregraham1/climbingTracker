@@ -270,13 +270,49 @@ def edit_centre_image(request):
     else:
         centre.image = new_image
         centre.save()
-        print(centre.image)
 
         status = 201
         success = True
         message = {"message": "Image changed successfully", "tag": "success"}
 
     return JsonResponse({"success": success, "message": message}, status=status)
+
+
+@login_required
+def edit_setters_list(request):
+    # FIXME This is indentation hell
+    centre = Centre.objects.get(owner=request.user)
+
+    if centre is None:
+        return JsonResponse({"success": False}, status=500)
+
+    status = 202
+    success = False
+
+    print(request.POST)
+    if request.POST["action"] == "add":
+        setter_user = User.objects.get(username=request.POST["new-setter"])
+
+        if setter_user is None:
+            message = {"message": "User does not exist", "tag": "error"}
+
+        else:
+            setter = Climber.objects.get(user=setter_user)
+            if setter is None:
+                message = {"message": "Setter must be a climber, not a centre", "tag": "error"}
+
+            elif setter in centre.setters.all():
+                message = {"message": "Setter is already registered for this centre", "tag": "primary"}
+
+            else:
+                centre.setters.add(setter)
+                centre.save()
+
+                status = 201
+                success = True
+                message = {"message": "Setter added", "tag": "success"}
+
+    return JsonResponse({"success": success, "message": message, "username": request.POST["new-setter"]}, status=status)
 
 
 def centre_page(request, centre_id):

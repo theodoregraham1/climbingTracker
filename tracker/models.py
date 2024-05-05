@@ -17,7 +17,7 @@ class Centre(models.Model):
             "owner": self.owner.id,
             "name": self.name,
             "location": self.location,
-            "setters": [user.id for user in self.setters.all()],
+            "setters": [{"id": climber.id, "username": climber.user.username} for climber in self.setters.order_by("user__username")],
             "walls_num": self.walls.count(),
             "routes_num": None,
             "image_url": None,

@@ -132,9 +132,44 @@ function edit_attribute(name) {
 	return false;
 }
 
+function open_add_setter_form() {
+	document.getElementById(`add-setter-btn`).style.display = "none";
+	document.getElementById(`setters-list`).innerHTML += `
+		<form id="add-setter-form" name="add-setter-form" class="input-group">
+				<input id="new-setter" name="new-setter" type="text" class="form-control" placeholder="New Setter" aria-describedby="add-setter-submit">
+				<button class="btn btn-outline-primary" type="submit" id="add-setter-submit" onclick="{add_setter(); return false}">Add Setter</button>
+		</form>
+	`
+	document.getElementById("add-setter-form")
+		.addEventListener("submit", (event) => event.preventDefault())
+}
+
+function add_setter() {
+	const data = new FormData(document.forms.namedItem(`add-setter-form`));
+	data.append("csrfmiddlewaretoken", get_CSRF_token())
+	data.append("action", "add")
+
+	fetch(`../api/edit/setters`, {
+		method: "POST",
+		body: data
+	})
+		.then(response => response.json())
+		.then(json => {
+			if (json["success"]) {
+				document.getElementById(`add-setter-btn`).style.display = "block";
+				document.getElementById(`add-setter-form`).remove();
+				document.getElementById('add-setter-btn').insertAdjacentHTML("beforebegin", `
+					<li class="list-group-item">
+                        ${json["username"]}
+                    </li>
+				`)
+			}
+			display_message(json["message"]["message"], json["message"]["tag"])
+		})
+	return false;
+}
+
 function close_editing_form(name) {
 	document.getElementById(`change-${name}-btn`).style.display = "block";
 	document.getElementById(`edit-${name}-form`).remove();
 }
-
-//TODO Allow dynamic updating of messages
