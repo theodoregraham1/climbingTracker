@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from tracker.models import Climber, Centre
+from tracker.models import Climber, Centre, Wall
 
 
 def index(request):
@@ -333,7 +333,7 @@ def edit_setters_list(request):
 
 
 @login_required
-def wall_settings(request):
+def wall_settings(request, id):
     if request.session["type"] != "Centre":
         return HttpResponseRedirect(reverse("index"))
 
@@ -347,9 +347,18 @@ def add_wall(request):
         return HttpResponseRedirect(reverse("index"))
 
     if request.method == "POST":
-        return HttpResponseRedirect(reverse(""))
-    centre = Centre.objects.get(owner=request.user)
+        return HttpResponseRedirect(reverse("account"))
 
+    centre = Centre.objects.get(owner=request.user)
+    name = request.POST["new-wall"]
+
+    wall = Wall(centre=centre, name=name)
+    wall.save()
+
+    centre.walls.add(wall)
+    centre.save()
+
+    return HttpResponseRedirect(reverse("wall_settings", wall.id))
 
 
 def centre_page(request, centre_id):
