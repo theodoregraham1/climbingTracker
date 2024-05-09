@@ -11,8 +11,10 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("centres/<centre_id>", views.centre_page, name="centre_page"),
 
-    path("centre/account", views.account_centre, name="account_centre"),
-    path("climber/account", views.account_climber, name="account_climber"),
+    path("account", views.account, name="account"),
+
+    path("centre/walls/<id>", views.wall_settings, name="wall_settings"),
+    path("centre/walls/add", views.add_wall, name="add_wall"),
 
     path("api/centres", views.get_centres, name="centres"),
 

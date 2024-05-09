@@ -168,14 +168,12 @@ def logout_view(request):
 
 
 @login_required
-def account_centre(request):
-    return render(request, "tracker/account_centre.html", {
-        "centre": Centre.objects.get(owner=request.user).serialise()
-    })
+def account(request):
+    if request.session["type"] == "Centre":
+        return render(request, "tracker/account_centre.html", {
+            "centre": Centre.objects.get(owner=request.user).serialise()
+        })
 
-
-@login_required
-def account_climber(request):
     return render(request, "tracker/account_climber.html")
 
 
@@ -332,6 +330,26 @@ def edit_setters_list(request):
             "success": success,
             "message": message,
         }, status=status)
+
+
+@login_required
+def wall_settings(request):
+    if request.session["type"] != "Centre":
+        return HttpResponseRedirect(reverse("index"))
+
+    if request.method != "POST":
+        return render(request, "tracker/")
+
+
+@login_required
+def add_wall(request):
+    if request.session["type"] != "Centre":
+        return HttpResponseRedirect(reverse("index"))
+
+    if request.method == "POST":
+        return HttpResponseRedirect(reverse(""))
+    centre = Centre.objects.get(owner=request.user)
+
 
 
 def centre_page(request, centre_id):

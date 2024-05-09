@@ -189,6 +189,15 @@ function remove_setter(id) {
 		})
 }
 
+function open_add_wall_form() {
+	document.getElementById(`add-wall-btn`).style.display = "none";
+	document.getElementById(`walls-list`).innerHTML += `
+		<form id="add-wall-form" name="add-wall-form" class="input-group" action="/centres/walls/add" method="post">
+				<input id="new-wall" name="new-wall" type="text" class="form-control" placeholder="New wall name" aria-describedby="add-wall-submit">
+				<button class="btn btn-outline-primary" type="submit" id="add-wall-submit">Add Wall</button>
+		</form>
+	`
+}
 function close_editing_form(name) {
 	document.getElementById(`change-${name}-btn`).style.display = "block";
 	document.getElementById(`edit-${name}-form`).remove();

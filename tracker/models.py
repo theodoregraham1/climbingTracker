@@ -55,6 +55,7 @@ class Route(models.Model):
 
 class Wall(models.Model):
     centre = models.ForeignKey(Centre, related_name="walls", on_delete=models.CASCADE, blank=True)
+    name = models.TextField(max_length=100)
 
     class Meta:
         app_label = "tracker"
@@ -63,6 +64,7 @@ class Wall(models.Model):
 # Reviews
 class Review(models.Model):
     writer = models.ForeignKey("Climber", related_name="reviews", on_delete=models.CASCADE)
+    route = models.ForeignKey(Route, related_name="reviews", on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now=True)
 
     class Meta:

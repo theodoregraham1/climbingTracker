@@ -23,9 +23,7 @@
             <ul class="navbar-nav mr-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" {% if request.session.type == "Centre" %} href="{% url 'account_centre' %}" {% else %} href="{% url 'account_climber' %}" {% endif %}>
-                            <strong id="username-link">{{ user.username }}</strong>
-                        </a>
+                        <a class="nav-link" href="{% url 'account' %}"><strong id="username-link">{{ user.username }}</strong></a>
                     </li>
                 {% endif %}
                 <li class="nav-item">
@@ -34,7 +32,7 @@
                 {% if user.is_authenticated %}
                         <li class="nav-item">
                             {% if type == "Climber" %}
-                                <a class="nav-link" href="#">Your Centres</a>
+                                <a class="nav-link" href="#">Your Centres</a> <!-- TODO -->
                             {% endif %}
                         </li>
                     <li class="nav-item">

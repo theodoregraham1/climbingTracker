@@ -51,6 +51,19 @@
             </div>
         </li>
 
+        <li id="change-walls-li" class="list-group-item list-group-item-action pb-3">
+            <h4>Current Walls:</h4>
+            <ul id="walls-list" class="list-group col-md-6">
+                {% for wall in centre.walls %}
+                    <li id="wall-{{ wall.id }}-li" class="list-group-item form-group">
+                        <span id="wall-{{ wall.id }}" aria-describedby="wall-{{ wall.id }}-remove-btn">{{ wall.name }}</span>
+                        <span class="badge text-bg-secondary interactable" id="wall-{{ wall.id }}-remove-btn"><a href="{% url 'wall_settings' wall.id %}">Settings</a></span>
+                    </li>
+                {% endfor %}
+                <button id="add-wall-btn" class="list-group-item list-group-item-action" onclick="open_add_wall_form()">+ Add wall</button>
+            </ul>
+        </li>
+
         <li id="change-setters-li" class="list-group-item list-group-item-action pb-3">
             <h4>Current Setters:</h4>
             <ul id="setters-list" class="list-group col-md-6">
@@ -63,7 +76,8 @@
                 <button id="add-setter-btn" class="list-group-item list-group-item-action" onclick="open_add_setter_form()">+ Add Setter</button>
             </ul>
         </li>
+
+        <!-- TODO: Allow wall editing -->
     </ul>
 {% endblock %}
 
-<!-- TODO: Possibly split into user and centre settings -->
