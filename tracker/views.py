@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
+from tracker.constants import POSSIBLE_GRADES
 from tracker.models import Climber, Centre, Wall
 
 
@@ -333,19 +334,38 @@ def edit_setters_list(request):
 
 
 @login_required
-def wall_settings(request, id):
-    if request.session["type"] != "Centre":
-        return HttpResponseRedirect(reverse("index"))
+def view_wall(request, id):
+    wall = Wall.objects.get(id=id)
 
-    return render(request, "tracker/wall_settings.html")
+    owned = False
+
+    if request.session["type"] != "Centre":
+        pass
+
+    elif request.user.owned_centre.get() == wall.centre:
+        owned = True
+
+    if owned:
+        return render(request, "tracker/wall_settings.html", {
+            "wall": wall,
+            "routes": wall.routes.all(),
+            "grades_all": POSSIBLE_GRADES
+        })
+    else:
+        # TODO Allow support for outdoor walls
+        return render(request, "tracker/wall.html", {
+            "wall": wall,
+            "location": wall.centre.get() if wall.centre.get() is not None else None
+        })
 
 
 @login_required
 def add_wall(request):
+    print("Hello")
     if request.session["type"] != "Centre":
         return HttpResponseRedirect(reverse("index"))
 
-    if request.method == "POST":
+    if request.method != "POST":
         return HttpResponseRedirect(reverse("account"))
 
     centre = Centre.objects.get(owner=request.user)
@@ -354,7 +374,7 @@ def add_wall(request):
     wall = Wall(centre=centre, name=name)
     wall.save()
 
-    return HttpResponseRedirect(reverse("wall_settings", wall.id))
+    return HttpResponseRedirect(reverse("wall", args=[wall.id,]))
 
 
 def centre_page(request, centre_id):

@@ -19,6 +19,7 @@ class Centre(models.Model):
             "location": self.location,
             "setters": [{"id": climber.id, "username": climber.user.username} for climber in self.setters.order_by("user__username")],
             "walls_num": self.walls.count(),
+            "walls": [{"id": wall.id, "name": wall.name} for wall in self.walls.order_by("last_updated")],
             "routes_num": None,
             "image_url": None,
         }
@@ -53,9 +54,18 @@ class Route(models.Model):
         app_label = "tracker"
 
 
+class Grade(models.Model):
+    route = models.ForeignKey("Route", related_name="grades", on_delete=models.CASCADE)
+    grade = models.CharField(max_length=10)
+
+    class Meta:
+        app_label = "tracker"
+
+
 class Wall(models.Model):
     centre = models.ForeignKey(Centre, related_name="walls", on_delete=models.CASCADE, blank=True)
     name = models.TextField(max_length=100)
+    last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         app_label = "tracker"

@@ -13,7 +13,7 @@ urlpatterns = [
 
     path("account", views.account, name="account"),
 
-    path("centre/walls/<id>", views.wall_settings, name="wall_settings"),
+    path("centre/walls/<int:id>", views.view_wall, name="wall"),
     path("centre/walls/add", views.add_wall, name="add_wall"),
 
     path("api/centres", views.get_centres, name="centres"),

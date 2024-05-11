@@ -6,9 +6,56 @@
 {% endblock %}
 
 {% block head %}
+    <script src="{% static 'wall_editing.js' %}"></script>
 {% endblock %}
 
 {% block body %}
     <!-- TODO: Allow route editing -->
+    <div class="text-center">
+        <h2>Wall: {{ wall.name }}</h2>
+        <p>Last updated: {{ wall.last_updated }}</p>
+        <p><a href="{% url 'wall' wall.id %}">See user view</a></p>
+    </div>
 
+    <div class="text-center mb-3">
+        <h3>Edit routes</h3>
+        <p class="text-small">It is recommended to reset all routes at once at the same time as you reset the wall in reality. This will also reset reviews and alert the climbers who follow your centre.</p>
+        <button type="button" class="btn btn-danger">Submit edits</button>
+    </div>
+
+    <ul class="list-group col-md-6 mx-auto">
+        {% for route in routes %}
+            <li class="list-group-item">
+                <h4>Route {{ route.number }}</h4>
+                <p>Grades: {% for grade in route.grades %}grade {% endfor %}</p>
+            </li>
+        {% endfor %}
+
+        <li class="list-group-item list-group-item-action">
+            <h4>Add Route</h4>
+            <form onsubmit="add_route()" class="form col-md-6">
+                <div class="input-group form-row">
+                    <label class="input-group-text" for="new-route-number">Number</label>
+                    <input disabled id="new-route-number" type="number" class="form-control" value="{{ routes|length|add:1 }}">
+                </div>
+
+                <div class="input-group form-row my-3">
+                    <label class="input-group-text" for="new-route-grades">Select grades</label>
+                    <select id="new-route-grades" class="form-select">
+                        <option selected disabled value="0">Select grades</option>
+                        {% for grade in grades_all %}
+                            <option value="{{ grade }}">{{ grade }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="btn btn-secondary" type="reset" onclick="add_grade()">Add grade</button>
+                </div>
+
+                <div id="selected-grades-div">
+
+                </div>
+
+                <button class="btn btn-danger">Add route</button>
+            </form>
+        </li>
+    </ul>
 {% endblock %}

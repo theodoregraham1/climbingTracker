@@ -57,7 +57,7 @@
                 {% for wall in centre.walls %}
                     <li id="wall-{{ wall.id }}-li" class="list-group-item form-group">
                         <span id="wall-{{ wall.id }}" aria-describedby="wall-{{ wall.id }}-remove-btn">{{ wall.name }}</span>
-                        <span class="badge text-bg-secondary interactable" id="wall-{{ wall.id }}-remove-btn"><a href="{% url 'wall_settings' wall.id %}">Settings</a></span>
+                        <span class="badge text-bg-secondary interactable" id="wall-{{ wall.id }}-remove-btn" onclick="location.href = '{% url 'wall' wall.id %}'">Settings</span>
                     </li>
                 {% endfor %}
                 <button id="add-wall-btn" class="list-group-item list-group-item-action" onclick="open_add_wall_form()">+ Add wall</button>
