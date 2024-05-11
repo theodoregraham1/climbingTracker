@@ -38,7 +38,7 @@ def login_view(request):
 
     if user is not None:
         login(request, user)
-        if user.owned_centre is not None:
+        if len(user.owned_centre.all()) > 0:
             request.session["type"] = "Centre"
         else:
             request.session["type"] = "Climber"
@@ -337,8 +337,7 @@ def wall_settings(request, id):
     if request.session["type"] != "Centre":
         return HttpResponseRedirect(reverse("index"))
 
-    if request.method != "POST":
-        return render(request, "tracker/")
+    return render(request, "tracker/wall_settings.html")
 
 
 @login_required
@@ -354,9 +353,6 @@ def add_wall(request):
 
     wall = Wall(centre=centre, name=name)
     wall.save()
-
-    centre.walls.add(wall)
-    centre.save()
 
     return HttpResponseRedirect(reverse("wall_settings", wall.id))
 

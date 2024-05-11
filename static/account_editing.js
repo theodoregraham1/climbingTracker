@@ -193,6 +193,7 @@ function open_add_wall_form() {
 	document.getElementById(`add-wall-btn`).style.display = "none";
 	document.getElementById(`walls-list`).innerHTML += `
 		<form id="add-wall-form" name="add-wall-form" class="input-group" action="/centre/walls/add" method="post">
+				<input type="hidden" name="csrfmiddlewaretoken" value="${get_CSRF_token()}">
 				<input id="new-wall" name="new-wall" type="text" class="form-control" placeholder="New wall name" aria-describedby="add-wall-submit">
 				<button class="btn btn-outline-primary" type="submit" id="add-wall-submit">Add Wall</button>
 		</form>
