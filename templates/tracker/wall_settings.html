@@ -7,6 +7,7 @@
 
 {% block head %}
     <script src="{% static 'wall_editing.js' %}"></script>
+    <script>const wall_id = {{ wall.id }}</script>
 {% endblock %}
 
 {% block body %}
@@ -25,15 +26,16 @@
 
     <ul class="list-group col-md-6 mx-auto">
         {% for route in routes %}
-            <li class="list-group-item">
+            <li class="list-group-item" id="route-{{ route.id }}-li">
                 <h4>Route {{ route.number }}</h4>
                 <p>Grades: {% for grade in route.grades %}grade {% endfor %}</p>
+                <button class="btn btn-secondary" type="reset" onclick="add_grade()">Add grade</button>
             </li>
         {% endfor %}
 
-        <li class="list-group-item list-group-item-action">
+        <li class="list-group-item list-group-item-action" id="add-route-li">
             <h4>Add Route</h4>
-            <form onsubmit="add_route()" class="form col-md-6">
+            <form onsubmit="add_route()" class="form col-md-6" id="add-route-form">
                 <div class="input-group form-row">
                     <label class="input-group-text" for="new-route-number">Number</label>
                     <input disabled id="new-route-number" type="number" class="form-control" value="{{ routes|length|add:1 }}">

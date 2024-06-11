@@ -1,3 +1,5 @@
+from typing import List
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -8,7 +10,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from tracker.constants import POSSIBLE_GRADES
-from tracker.models import Climber, Centre, Wall
+from tracker.models import Climber, Centre, Wall, Route, Grade
 
 
 def index(request):
@@ -361,7 +363,6 @@ def view_wall(request, id):
 
 @login_required
 def add_wall(request):
-    print("Hello")
     if request.session["type"] != "Centre":
         return HttpResponseRedirect(reverse("index"))
 
@@ -375,6 +376,38 @@ def add_wall(request):
     wall.save()
 
     return HttpResponseRedirect(reverse("wall", args=[wall.id,]))
+
+
+@login_required
+def add_route(request, wall_id:int):
+    if request.session["type"] != "Centre":
+        return HttpResponseRedirect(reverse("index"))
+
+    if request.method != "POST":
+        return HttpResponseRedirect(reverse("wall", wall_id))
+
+    centre: Centre = Centre.objects.get(owner=request.user)
+    wall: Wall = Wall.objects.get(id=request.POST[wall_id])
+
+    if wall is None:
+        return HttpResponseRedirect(reverse("account"))
+
+    if wall.centre != centre:
+        return HttpResponseRedirect(reverse("wall", wall_id))
+
+    route: Route = Route(wall=wall, number=request.POST["number"])
+    route.save()
+
+    for grade in request.POST["grades"]:
+        new_grade: Grade = Grade(route=route, grade=grade)
+        new_grade.save()
+
+    message = {"message": "Route added successfully", "tag": "success"}
+
+    return JsonResponse({
+        "success": True,
+        "message": message,
+    }, status=201)
 
 
 def centre_page(request, centre_id):

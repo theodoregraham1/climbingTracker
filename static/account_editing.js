@@ -117,6 +117,7 @@ function open_attr_editing(name) {
 function edit_attribute(name) {
 	const data = new FormData(document.forms.namedItem(`edit-${name}-form`));
 	data.append("csrfmiddlewaretoken", get_CSRF_token())
+
 	fetch(`../api/edit/${name}`, {
 		method: "POST",
 		body: data
