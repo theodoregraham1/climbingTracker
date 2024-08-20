@@ -26,4 +26,5 @@ urlpatterns = [
     path("api/edit/setters", views.edit_setters_list, name="edit_setters"),
     path("api/edit/<attribute>", views.edit_centre_attribute, name="edit_centre_attribute"),
     path("api/walls/add-route", views.add_route, name="add_route"),
+    path("api/walls/edit-route/<int:route_id>", views.edit_route, name="edit_route"),
 ]

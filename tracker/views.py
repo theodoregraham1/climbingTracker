@@ -401,12 +401,9 @@ def add_route(request):
         new_grade: Grade = Grade(route=route, grade=grade)
         new_grade.save()
 
-    message = {"message": "Route added successfully", "tag": "success"}
+    messages.success(request,  "Route added successfully")
 
-    return JsonResponse({
-        "success": True,
-        "message": message,
-    }, status=201)
+    return JsonResponse({"success": True}, status=201)
 
 
 @login_required()
@@ -432,9 +429,33 @@ def remove_route(request, route_id):
 
     messages.error(request, f"Route number {route_number} was removed")
 
-    return HttpResponseRedirect(reverse("wall_settings", args=[wall.id, ]))
+    return JsonResponse({"success": True}, status=201)
 
+@login_required
+def edit_route(request, route_id):
+    if request.session["type"] != "Centre":
+        return HttpResponseRedirect(reverse("index"))
 
+    centre: Centre = Centre.objects.get(owner=request.user)
+    route: Route = Route.objects.get(id=route_id)
+    wall: Wall = route.wall
+
+    if route is None or wall.centre != centre:
+        return JsonResponse({"success": False}, status=500)
+
+    route.grades.all().delete()
+
+    grades = request.POST["grades"].split(",")
+
+    for grade in grades:
+        new_grade: Grade = Grade(route=route, grade=grade)
+        new_grade.save()
+
+    messages.success(request, "Route edited successfully")
+
+    return JsonResponse({"success": True}, status=201)
+
+@login_required
 def centre_page(request, centre_id):
     return render(request, "tracker/centre_page.html", {
         "centre": Centre.objects.get(id=centre_id)
