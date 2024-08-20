@@ -7,6 +7,7 @@ function open_username_editing() {
 			<button class="btn btn-primary mt-3" type="submit" onclick="{edit_username(); return false;}">Change Username</button>
 		</form>
 	` // FIXME This resets the value of the disabled old-username element for no reason
+
 	document.getElementById("edit-username-form")
 		.addEventListener("submit", (event) => event.preventDefault())
 }

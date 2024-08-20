@@ -12,9 +12,11 @@ urlpatterns = [
     path("centres/<int:centre_id>", views.centre_page, name="centre_page"),
 
     path("account", views.account, name="account"),
+    path("centre/walls/settings/<int:wall_id>", views.wall_settings, name="wall_settings"),
 
-    path("centre/walls/<int:id>", views.view_wall, name="wall"),
+    path("centre/walls/<int:wall_id>", views.view_wall, name="wall"),
     path("centre/walls/add", views.add_wall, name="add_wall"),
+    path("walls/remove-route/<int:route_id>", views.remove_route, name="remove_route"),
 
     path("api/centres", views.get_centres, name="centres"),
 
@@ -23,5 +25,5 @@ urlpatterns = [
     path("api/edit/image", views.edit_centre_image, name="edit_image"),
     path("api/edit/setters", views.edit_setters_list, name="edit_setters"),
     path("api/edit/<attribute>", views.edit_centre_attribute, name="edit_centre_attribute"),
-    path("api/walls/<int:id>/add-route", views.add_route, name="add_route")
+    path("api/walls/add-route", views.add_route, name="add_route"),
 ]

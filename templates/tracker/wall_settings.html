@@ -7,7 +7,9 @@
 
 {% block head %}
     <script src="{% static 'wall_editing.js' %}"></script>
-    <script>const wall_id = {{ wall.id }}</script>
+    <script>
+        const wall_id = {{ wall.id }}
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -15,21 +17,31 @@
     <div class="text-center">
         <h2>Wall: {{ wall.name }}</h2>
         <p>Last updated: {{ wall.last_updated }}</p>
-        <p><a href="{% url 'wall' wall.id %}">See user view</a></p>
+        <p><a href="{% url 'wall' wall.id %}">See user view</a></p> <!-- FIXME -->
     </div>
 
     <div class="text-center mb-3">
         <h3>Edit routes</h3>
-        <p class="text-small">It is recommended to reset all routes at once at the same time as you reset the wall in reality. This will also reset reviews and alert the climbers who follow your centre.</p>
+        <p class="text-small">It is recommended to reset all routes at once immediately after the physical wall is reset. This will also reset reviews and alert the climbers who follow your centre.</p>
         <button type="button" class="btn btn-danger">Submit edits</button>
     </div>
 
-    <ul class="list-group col-md-6 mx-auto">
+    <ul class="list-group col-md-6 mx-auto" >
         {% for route in routes %}
             <li class="list-group-item" id="route-{{ route.id }}-li">
                 <h4>Route {{ route.number }}</h4>
-                <p>Grades: {% for grade in route.grades %}grade {% endfor %}</p>
-                <button class="btn btn-secondary" type="reset" onclick="add_grade()">Add grade</button>
+                <p>Grades:</p>
+                <div>
+                    <ul class="list-group pb-3">
+                        {% for grade in route.grades %}
+                            <li class="list-group-item">
+                                {{ grade.grade }}
+                            </li>
+                        {% endfor %}
+			        </ul>
+                </div>
+                <button class="btn btn-secondary" onclick="<!-- TODO -->">Edit grades</button>
+                <a href="{% url 'remove_route' route.id %}" class="btn btn-danger">Remove route</a>
             </li>
         {% endfor %}
 
@@ -56,7 +68,7 @@
 
                 </div>
 
-                <button class="btn btn-danger">Add route</button>
+                <button class="btn btn-success">Add route</button>
             </form>
         </li>
     </ul>

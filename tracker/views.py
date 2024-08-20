@@ -1,5 +1,3 @@
-from typing import List
-
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -336,29 +334,31 @@ def edit_setters_list(request):
 
 
 @login_required
-def view_wall(request, id):
-    wall = Wall.objects.get(id=id)
+def view_wall(request, wall_id):
+    wall = Wall.objects.get(id=wall_id)
 
-    owned = False
+    # TODO Allow support for outdoor walls
+    return render(request, "tracker/wall.html", {
+        "wall": wall,
+        "location": wall.centre if wall.centre is not None else None
+    })
+
+
+@login_required
+def wall_settings(request, wall_id):
+    wall = Wall.objects.get(id=wall_id)
 
     if request.session["type"] != "Centre":
-        pass
+        return HttpResponseRedirect(reverse("wall", wall_id))
 
-    elif request.user.owned_centre.get() == wall.centre:
-        owned = True
+    if request.user.owned_centre.get() != wall.centre:
+        return HttpResponseRedirect(reverse("wall", wall_id))
 
-    if owned:
-        return render(request, "tracker/wall_settings.html", {
-            "wall": wall,
-            "routes": wall.routes.all(),
-            "grades_all": POSSIBLE_GRADES
-        })
-    else:
-        # TODO Allow support for outdoor walls
-        return render(request, "tracker/wall.html", {
-            "wall": wall,
-            "location": wall.centre.get() if wall.centre.get() is not None else None
-        })
+    return render(request, "tracker/wall_settings.html", {
+        "wall": wall,
+        "routes": [route.serialise() for route in wall.routes.all()],
+        "grades_all": POSSIBLE_GRADES
+    })
 
 
 @login_required
@@ -375,30 +375,29 @@ def add_wall(request):
     wall = Wall(centre=centre, name=name)
     wall.save()
 
-    return HttpResponseRedirect(reverse("wall", args=[wall.id,]))
+    return HttpResponseRedirect(reverse("wall", args=[wall.id, ]))
 
 
 @login_required
-def add_route(request, wall_id:int):
-    if request.session["type"] != "Centre":
-        return HttpResponseRedirect(reverse("index"))
-
-    if request.method != "POST":
-        return HttpResponseRedirect(reverse("wall", wall_id))
+def add_route(request):
+    if request.session["type"] != "Centre" or request.method != "POST":
+        return JsonResponse({"success": False}, status=500)
 
     centre: Centre = Centre.objects.get(owner=request.user)
-    wall: Wall = Wall.objects.get(id=request.POST[wall_id])
+    wall: Wall = Wall.objects.get(id=request.POST["wall"])
 
     if wall is None:
-        return HttpResponseRedirect(reverse("account"))
+        return JsonResponse({"success": False}, status=500)
 
     if wall.centre != centre:
-        return HttpResponseRedirect(reverse("wall", wall_id))
+        return JsonResponse({"success": False}, status=500)
 
     route: Route = Route(wall=wall, number=request.POST["number"])
     route.save()
 
-    for grade in request.POST["grades"]:
+    grades = request.POST["grades"].split(",")
+
+    for grade in grades:
         new_grade: Grade = Grade(route=route, grade=grade)
         new_grade.save()
 
@@ -408,6 +407,32 @@ def add_route(request, wall_id:int):
         "success": True,
         "message": message,
     }, status=201)
+
+
+@login_required()
+def remove_route(request, route_id):
+    if request.session["type"] != "Centre":
+        return HttpResponseRedirect(reverse("index"))
+
+    centre: Centre = Centre.objects.get(owner=request.user)
+    route: Route = Route.objects.get(id=route_id)
+    wall: Wall = route.wall
+
+    if route is None or wall.centre != centre:
+        return HttpResponseRedirect(reverse("wall_settings", args=[wall.id, ]))
+
+    route_number: int = route.number
+
+    for route in wall.routes.all():
+        if route_number < route.number:
+            route.number -= 1
+            route.save()
+
+    route.delete()
+
+    messages.error(request, f"Route number {route_number} was removed")
+
+    return HttpResponseRedirect(reverse("wall_settings", args=[wall.id, ]))
 
 
 def centre_page(request, centre_id):

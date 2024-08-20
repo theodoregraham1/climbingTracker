@@ -50,6 +50,14 @@ class Route(models.Model):
     wall = models.ForeignKey("Wall", related_name="routes", on_delete=models.CASCADE)
     number = models.IntegerField(blank=True)
 
+    def serialise(self):
+        return {
+            "id": self.id,
+            "number": self.number,
+            "wall": self.wall,
+            "grades": self.grades.all().order_by("grade"),
+        }
+
     class Meta:
         app_label = "tracker"
 
