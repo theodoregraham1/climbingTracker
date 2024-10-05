@@ -10,6 +10,17 @@
 {% block body %}
     <h2 class="text-center py-3">{{ centre.name }}</h2>
     <div class="text-center">
-        <img src="{{ centre.image.url }}" height="500" alt="Image provided by climbing centre {{centre.name}}">
+        <img src="{{ image.url }}" height="500" alt="Image provided by climbing centre {{centre.name}}">
+    </div>
+
+    <div class="text-center">
+        <h4>Walls:</h4>
+        <ul class="list-group">
+            {% for wall in centre.walls %}
+                <li class="list-group-item">
+                    <h3><a href="{% url 'wall' wall.id %}">{{wall.name}}</a></h3>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 {% endblock %}

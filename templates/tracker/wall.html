@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block head %}
+    <script src="{% static 'wall.js' %}"></script>
 {% endblock %}
 
 {% block body %}
@@ -14,5 +15,38 @@
         <p>Last updated: {{ wall.last_updated }}</p>
     </div>
 
+    <div class="text-center">
+        <h3>Routes</h3>
+    </div>
+    <ul class="list-group col-md-6 mx-auto" >
+        {% for route in routes %}
+            <!-- Route info -->
+            <li class="list-group-item" id="route-{{ route.id }}-li">
+                <h4 id="route-{{ route.id }}-title">Route {{ route.number }}</h4>
+                <p>Grades:</p>
+
+                <div id="route-{{ route.id }}-grades">
+                    <ul class="list-group pb-3">
+                        {% for grade in route.grades %}
+                            <li class="list-group-item container">
+                                <span class="float-start text-start col-md-6">
+                                    {{ grade.grade }}
+                                </span>
+                                {% if request.session.type == "Climber" %}
+                                    <span class="text-end float-end col-md-6">
+                                        Climbed?
+                                        <input class="form-check-inline" type="checkbox" id="grade-{{ grade.id }}-checkbox" oninput="grade_climbed({{ grade.id }})" {% if grade.climbed %}checked{% endif %}>
+                                    </span>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </li>
+
+            <!-- Comments -->
+
+        {% endfor %}
+    </ul>
     <!-- TODO -->
 {% endblock %}

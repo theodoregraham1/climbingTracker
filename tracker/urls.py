@@ -19,6 +19,7 @@ urlpatterns = [
     path("walls/remove-route/<int:route_id>", views.remove_route, name="remove_route"),
 
     path("api/centres", views.get_centres, name="centres"),
+    path("api/walls/climb-grade/<int:grade_id>", views.climb_route, name="climb_route"),
 
     path("api/edit/username", views.edit_username, name="edit_username"),
     path("api/edit/password", views.edit_password, name="edit_password"),

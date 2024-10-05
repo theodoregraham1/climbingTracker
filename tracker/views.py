@@ -279,7 +279,6 @@ def edit_centre_image(request):
 
 @login_required
 def edit_setters_list(request):
-    # FIXME This is indentation hell
     centre = Centre.objects.get(owner=request.user)
 
     if centre is None:
@@ -337,9 +336,9 @@ def edit_setters_list(request):
 def view_wall(request, wall_id):
     wall = Wall.objects.get(id=wall_id)
 
-    # TODO Allow support for outdoor walls
     return render(request, "tracker/wall.html", {
         "wall": wall,
+        "routes": [route.serialise(request) for route in wall.routes.all()],
         "location": wall.centre if wall.centre is not None else None
     })
 
@@ -356,7 +355,7 @@ def wall_settings(request, wall_id):
 
     return render(request, "tracker/wall_settings.html", {
         "wall": wall,
-        "routes": [route.serialise() for route in wall.routes.all()],
+        "routes": [route.serialise(request) for route in wall.routes.all()],
         "grades_all": POSSIBLE_GRADES
     })
 
@@ -429,7 +428,7 @@ def remove_route(request, route_id):
 
     messages.error(request, f"Route number {route_number} was removed")
 
-    return JsonResponse({"success": True}, status=201)
+    return HttpResponseRedirect(reverse("wall_settings", args=[wall.id, ]))
 
 @login_required
 def edit_route(request, route_id):
@@ -455,8 +454,28 @@ def edit_route(request, route_id):
 
     return JsonResponse({"success": True}, status=201)
 
+
 @login_required
 def centre_page(request, centre_id):
+    centre: Centre = Centre.objects.get(id=centre_id)
     return render(request, "tracker/centre_page.html", {
-        "centre": Centre.objects.get(id=centre_id)
+        "centre": centre.serialise(),
+        "image": centre.image
     })
+
+
+@login_required
+def climb_route(request, grade_id):
+    if request.session["type"] != "Climber":
+        return JsonResponse({"success": False}, status=403)
+
+    climber = Climber.objects.get(user=request.user)
+
+    grade : Grade = Grade.objects.get(id=grade_id)
+
+    if len(grade.climbers.filter(user=request.user)) > 0:
+        grade.climbers.remove(climber)
+    else:
+        grade.climbers.add(climber)
+
+    return JsonResponse({"success": True}, status=201)
