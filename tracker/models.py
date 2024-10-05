@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User, Group
 from django.db import models
-from django.core import validators
 
 
 class Centre(models.Model):
@@ -53,21 +52,28 @@ class Route(models.Model):
     number = models.IntegerField(blank=True)
 
     def serialise(self, request):
+        print(len(self.reviews.filter(writer__user=request.user)) > 0)
         data = {
             "id": self.id,
             "number": self.number,
             "wall": self.wall,
-            "grades": []
+            "grades": [],
+            "reviewed": len(self.reviews.filter(writer__user=request.user)) > 0,
+            "reviews": [r.serialise() for r in self.reviews.exclude(writer__user=request.user).order_by("timestamp")]
         }
 
+        # Get user's review
+        if data["reviewed"]:
+            data["user_review"] = self.reviews.get(writer__user=request.user).serialise()
+
+        # Get grade information
         grades_data = []
         if len(Climber.objects.filter(user=request.user)) > 0:
             climber = Climber.objects.get(user=request.user)
 
             for grade in self.grades.all().order_by("grade"):
                 g = grade.serialise()
-                g.update({"climbed": climber in grade.climbers.all()})
-
+                g["climbed"] = climber in grade.climbers.all()
                 grades_data.append(g)
 
         else:
@@ -97,6 +103,7 @@ class Grade(models.Model):
     class Meta:
         app_label = "tracker"
 
+
 class Wall(models.Model):
     centre = models.ForeignKey(Centre, related_name="walls", on_delete=models.CASCADE, blank=True)
     name = models.TextField(max_length=100)
@@ -111,6 +118,14 @@ class Review(models.Model):
     writer = models.ForeignKey("Climber", related_name="reviews", on_delete=models.CASCADE)
     route = models.ForeignKey(Route, related_name="reviews", on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now=True)
+    content = models.TextField()
+
+    def serialise(self):
+        return {
+            "writer": self.writer.user.username,
+            "timestamp": self.timestamp,
+            "content": self.content
+        }
 
     class Meta:
         app_label = "tracker"

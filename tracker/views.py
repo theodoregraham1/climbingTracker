@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from tracker.constants import POSSIBLE_GRADES
-from tracker.models import Climber, Centre, Wall, Route, Grade
+from tracker.models import Climber, Centre, Wall, Route, Grade, Review
 
 
 def index(request):
@@ -339,7 +339,7 @@ def view_wall(request, wall_id):
     return render(request, "tracker/wall.html", {
         "wall": wall,
         "routes": [route.serialise(request) for route in wall.routes.all()],
-        "location": wall.centre if wall.centre is not None else None
+        "location": wall.centre if wall.centre is not None else None,
     })
 
 
@@ -400,7 +400,7 @@ def add_route(request):
         new_grade: Grade = Grade(route=route, grade=grade)
         new_grade.save()
 
-    messages.success(request,  "Route added successfully")
+    messages.success(request, "Route added successfully")
 
     return JsonResponse({"success": True}, status=201)
 
@@ -429,6 +429,7 @@ def remove_route(request, route_id):
     messages.error(request, f"Route number {route_number} was removed")
 
     return HttpResponseRedirect(reverse("wall_settings", args=[wall.id, ]))
+
 
 @login_required
 def edit_route(request, route_id):
@@ -471,7 +472,7 @@ def climb_route(request, grade_id):
 
     climber = Climber.objects.get(user=request.user)
 
-    grade : Grade = Grade.objects.get(id=grade_id)
+    grade: Grade = Grade.objects.get(id=grade_id)
 
     if len(grade.climbers.filter(user=request.user)) > 0:
         grade.climbers.remove(climber)
@@ -479,3 +480,21 @@ def climb_route(request, grade_id):
         grade.climbers.add(climber)
 
     return JsonResponse({"success": True}, status=201)
+
+
+@login_required
+def submit_review(request, route_id):
+    route = Route.objects.get(id=route_id)
+
+    if request.session["type"] != "Climber":
+        return HttpResponseRedirect(reverse("wall", args=[route.wall.id,]))
+
+    climber = Climber.objects.get(user=request.user)
+
+    if len(climber.reviews.filter(route=route)) > 0:
+        climber.reviews.get(route=route).delete()
+
+    review = Review(writer=climber, route=route, content=request.POST["content"])
+    review.save()
+
+    return HttpResponseRedirect(reverse("wall", args=[route.wall.id,]))

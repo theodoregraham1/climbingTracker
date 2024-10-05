@@ -38,15 +38,48 @@
                                         <input class="form-check-inline" type="checkbox" id="grade-{{ grade.id }}-checkbox" oninput="grade_climbed({{ grade.id }})" {% if grade.climbed %}checked{% endif %}>
                                     </span>
                                 {% endif %}
+
                             </li>
                         {% endfor %}
                     </ul>
                 </div>
             </li>
+            <li class="list-group-item accordion accordion-flush" id="route-{{ route.id }}-accordian">
+                <!-- Reviews -->
+                    <div class="accordion-item p-0 m-0">
+                        <h2 class="accordion-header" id="route-{{ route.id }}-acc-heading">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#route-{{ route.id }}-acc-item" aria-expanded="false" aria-controls="route-{{ route.id }}-acc-item">
+                                Reviews
+                            </button>
+                        </h2>
+                        <div id="route-{{ route.id }}-acc-item" class="accordion-collapse collapse" aria-labelledby="route-{{ route.id }}-acc-heading" data-bs-parent="#route-{{ route.id }}-accordian">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    {% if request.session.type == "Climber" %}
+                                        <li class="list-group-item list-group-item-action">
+                                            <h4>Your review</h4>
+                                            <form action="{% url 'review' route.id %}" method="post">
+                                                {% csrf_token %}
+                                                <textarea name="content" class="form-control" placeholder="Write your review here..." style="height: 100px">{% if route.reviewed %}{{ route.user_review.content }}{% endif %}</textarea>
+                                                <button type="submit" class="btn btn-success mt-2">Submit review</button>
+                                            </form>
+                                        </li>
+                                    {% endif %}
 
-            <!-- Comments -->
-
+                                    {% for review in route.reviews %}
+                                        <li class="list-group-item list-group-item-action">
+                                            <h5>{{ review.writer }}</h5>
+                                            <p class="small">{{ review.timestamp }}</p>
+                                            <p>
+                                                {{ review.content }}
+                                            </p>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+            </li>
         {% endfor %}
     </ul>
-    <!-- TODO -->
 {% endblock %}
